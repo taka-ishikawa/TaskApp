@@ -26,12 +26,12 @@ class TaskAlarmReceiver: BroadcastReceiver() {
         }
 
         // 通知の設定を行う
-        val notificationBuilder = NotificationCompat.Builder(context, "default")
-        notificationBuilder.setSmallIcon(R.drawable.small_icon)
-        notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.large_icon))
-        notificationBuilder.setWhen(System.currentTimeMillis())
-        notificationBuilder.setDefaults(Notification.DEFAULT_ALL)
-        notificationBuilder.setAutoCancel(true)
+        val builder = NotificationCompat.Builder(context, "default")
+        builder.setSmallIcon(R.drawable.small_icon)
+        builder.setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.large_icon))
+        builder.setWhen(System.currentTimeMillis())
+        builder.setDefaults(Notification.DEFAULT_ALL)
+        builder.setAutoCancel(true)
 
         // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
         val taskId = intent!!.getIntExtra(EXTRA_TASK, -1)
@@ -39,18 +39,18 @@ class TaskAlarmReceiver: BroadcastReceiver() {
         val task = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
 
         // タスクの情報を設定する
-        notificationBuilder.setTicker(task!!.title)   // 5.0以降は表示されない
-        notificationBuilder.setContentTitle(task.title)
-        notificationBuilder.setContentText(task.contents)
+        builder.setTicker(task!!.title)   // 5.0以降は表示されない
+        builder.setContentTitle(task.title)
+        builder.setContentText(task.contents)
 
         // 通知をタップしたらアプリを起動するようにする
         val startAppIntent = Intent(context, MainActivity::class.java)
         startAppIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
         val pendingIntent = PendingIntent.getActivity(context, 0, startAppIntent, 0)
-        notificationBuilder.setContentIntent(pendingIntent)
+        builder.setContentIntent(pendingIntent)
 
         // 通知を表示する
-        notificationManager.notify(task.id, notificationBuilder.build())
+        notificationManager.notify(task.id, builder.build())
         realm.close()
     }
 }

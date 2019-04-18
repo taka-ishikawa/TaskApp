@@ -45,27 +45,21 @@ class EditActivity : AppCompatActivity() {
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
         realm.close()
 
-        if (mTask == null) {
-            // 新規作成の場合
-            val calendar = Calendar.getInstance()
-            mYear = calendar.get(Calendar.YEAR)
-            mMonth = calendar.get(Calendar.MONTH)
-            mDay = calendar.get(Calendar.DAY_OF_MONTH)
-            mHour = calendar.get(Calendar.HOUR_OF_DAY)
-            mMinute = calendar.get(Calendar.MINUTE)
-        } else {
+        val calendar = Calendar.getInstance()
+        mYear = calendar.get(Calendar.YEAR)
+        mMonth = calendar.get(Calendar.MONTH)
+        mDay = calendar.get(Calendar.DAY_OF_MONTH)
+        mHour = calendar.get(Calendar.HOUR_OF_DAY)
+        mMinute = calendar.get(Calendar.MINUTE)
+
+        if (mTask != null) {
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
 
-            val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
-            mYear = calendar.get(Calendar.YEAR)
-            mMonth = calendar.get(Calendar.MONTH)
-            mDay = calendar.get(Calendar.DAY_OF_MONTH)
-            mHour = calendar.get(Calendar.HOUR_OF_DAY)
-            mMinute = calendar.get(Calendar.MINUTE)
 
+            //why mMonth '+ 1'. so it is because it is so.
             val dateString = mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
             val timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute)
 
@@ -88,7 +82,7 @@ class EditActivity : AppCompatActivity() {
 
     private val mOnTimeClickListener = View.OnClickListener {
         val timePickerDialog = TimePickerDialog(this,
-            TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 mHour = hourOfDay
                 mMinute = minute
                 val timeString = String.format("%02d", mHour) + "/" + String.format("%02d", mMinute)
@@ -113,10 +107,9 @@ class EditActivity : AppCompatActivity() {
             val taskRealmResults = realm.where(Task::class.java).findAll()
 
             val identifier: Int =
-                //for safety
-                    if (taskRealmResults.max("id") != null) {
+                    if (taskRealmResults.max("id") != null) { //there are some results
                         taskRealmResults.max("id")!!.toInt() + 1
-                    } else {
+                    } else { //there is no result
                         0
                     }
             mTask!!.id = identifier
