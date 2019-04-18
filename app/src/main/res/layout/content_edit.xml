@@ -14,16 +14,22 @@
         tools:showIn="@layout/activity_edit">
 
     <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:id="@+id/category_edit_text" android:hint="カテゴリ" android:singleLine="true"/>
+    <EditText
             android:id="@+id/title_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="タイトル" />
+            android:hint="タイトル" android:layout_marginTop="16dp" android:layout_below="@+id/category_edit_text"
+            android:singleLine="true"/>
     <EditText
             android:id="@+id/content_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/title_edit_text"
-            android:hint="内容" />
+            android:hint="内容" android:singleLine="true"/>
     <Button
             android:id="@+id/date_button"
             android:layout_width="0dp"
@@ -32,7 +38,7 @@
             android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/times_button"
             android:text="----/--/--"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
+            style="@style/Widget.AppCompat.Button.Borderless" android:layout_marginTop="0dp"/>
     <Button
             android:id="@id/times_button"
             android:layout_width="96dp"

@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import io.realm.Realm
 import io.realm.RealmChangeListener
 import io.realm.Sort
@@ -14,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 const val EXTRA_TASK = "com.example.taskapp.TASK"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TextWatcher {
 
     private lateinit var mRealm: Realm
     private val mRealmListener = RealmChangeListener<Realm> { reloadListView() }
@@ -35,6 +37,9 @@ class MainActivity : AppCompatActivity() {
 
         // ListViewの設定
         mTaskAdapter = TaskAdapter(this@MainActivity)
+
+        //search by category
+        category_search_edit_text.addTextChangedListener(this)
 
         //Intent MainActivity -> EditActivity
         listViewTasks.setOnItemClickListener { parent, _, position, _ ->
@@ -105,5 +110,30 @@ class MainActivity : AppCompatActivity() {
 
         // 表示を更新するために、アダプターにデータが変更されたことを知らせる
         mTaskAdapter.notifyDataSetChanged()
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        val strCategory = category_search_edit_text.text.toString()
+
+        if (strCategory == "") {
+            reloadListView()
+        } else {
+            val categoryQuery =
+                mRealm.where(Task::class.java).beginsWith("category", strCategory).sort("title", Sort.DESCENDING)
+            val categoryRealmResults = categoryQuery.findAll()
+            mTaskAdapter.taskList = mRealm.copyFromRealm(categoryRealmResults)
+
+            // TaskのListView用のアダプタに渡す
+            listViewTasks.adapter = mTaskAdapter
+
+            // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+            mTaskAdapter.notifyDataSetChanged()
+        }
     }
 }
