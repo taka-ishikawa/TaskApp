@@ -33,6 +33,11 @@
                     android:value=".MainActivity"/>
         </activity>
 
+        <activity android:name=".CategoryActivity"
+                  android:label="新規カテゴリーの作成"
+                  android:parentActivityName=".EditActivity"
+                  android:theme="@style/AppTheme"/>
+
         <receiver android:name=".TaskAlarmReceiver"/>
 
     </application>
