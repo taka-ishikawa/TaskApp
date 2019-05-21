@@ -37,6 +37,7 @@ class EditActivity : AppCompatActivity() {
         date_button.setOnClickListener(mOnDateClickListener)
         times_button.setOnClickListener(mOnTimeClickListener)
         done_button.setOnClickListener(mOnDoneClickListener)
+        add_category_button.setOnClickListener(mOnAddClickListener)
 
         // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
         val taskId = intent.getIntExtra(EXTRA_TASK, -1)
@@ -94,6 +95,11 @@ class EditActivity : AppCompatActivity() {
     private val mOnDoneClickListener = View.OnClickListener {
         addTask()
         finish()
+    }
+
+    private val mOnAddClickListener = View.OnClickListener {
+        val intent = Intent(this, CategoryActivity::class.java)
+        startActivity(intent)
     }
 
     private fun addTask() {
