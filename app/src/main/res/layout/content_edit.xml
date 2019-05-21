@@ -13,11 +13,9 @@
         tools:context=".EditActivity"
         tools:showIn="@layout/activity_edit">
 
-    <EditText
+    <Spinner
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:id="@+id/category_edit_text" android:hint="カテゴリ" android:singleLine="true"/>
+            android:layout_height="wrap_content" android:id="@+id/category_spinner"/>
     <Button
             android:text="カテゴリーの追加"
             android:layout_width="wrap_content"
@@ -28,7 +26,7 @@
             android:id="@+id/title_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="タイトル" android:layout_marginTop="16dp" android:layout_below="@+id/category_edit_text"
+            android:hint="タイトル" android:layout_marginTop="16dp" android:layout_below="@+id/category_spinner"
             android:singleLine="true"/>
     <EditText
             android:id="@+id/content_edit_text"
