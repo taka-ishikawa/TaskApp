@@ -6,7 +6,7 @@ import java.io.Serializable
 import java.util.*
 
 open class Task: RealmObject(), Serializable {
-    var category: String = ""
+    lateinit var category: Category
     var title: String = ""
     var contents: String = ""
     var date: Date = Date()
