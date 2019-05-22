@@ -20,6 +20,9 @@ class CategoryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_category)
 
         setSupportActionBar(toolbar2)
+        if (supportActionBar != null){
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        }
 
         realm = Realm.getDefaultInstance()
 
