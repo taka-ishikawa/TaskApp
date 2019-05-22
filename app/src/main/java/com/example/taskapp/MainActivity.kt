@@ -7,16 +7,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.text.Editable
-import android.text.TextWatcher
+import android.widget.ArrayAdapter
 import io.realm.Realm
 import io.realm.RealmChangeListener
-import io.realm.Sort
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 const val EXTRA_TASK = "com.example.taskapp.TASK"
 
-class MainActivity : AppCompatActivity(), TextWatcher {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var mRealm: Realm
     private val mRealmListener = RealmChangeListener<Realm> { reloadListView() }
@@ -38,8 +37,29 @@ class MainActivity : AppCompatActivity(), TextWatcher {
         // ListViewの設定
         mTaskAdapter = TaskAdapter(this@MainActivity)
 
-        //search by category
-        category_search_edit_text.addTextChangedListener(this)
+
+//        category_search_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//
+//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//                val strCategory = category_search_spinner.selectedItem.toString()
+//
+//                val category = mRealm.where(Category::class.java).equalTo("strCategory", strCategory).findFirst().toString()
+//                val categoryRealmResults =
+//                    mRealm.where(Task::class.java).equalTo("category", category).findAll()
+//                mTaskAdapter.taskList = mRealm.copyFromRealm(categoryRealmResults)
+//
+//                // TaskのListView用のアダプタに渡す
+//                listViewTasks.adapter = mTaskAdapter
+//
+//                // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+//                mTaskAdapter.notifyDataSetChanged()
+//            }
+//
+//            override fun onNothingSelected(parent: AdapterView<*>?) {
+//                reloadListView()
+//            }
+//
+//        }
 
         //Intent MainActivity -> EditActivity
         listViewTasks.setOnItemClickListener { parent, _, position, _ ->
@@ -92,6 +112,20 @@ class MainActivity : AppCompatActivity(), TextWatcher {
         reloadListView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        //　category spinner
+//        val categoryAdapter = CategoryAdapter(this)
+        val categoryRealmResults = mRealm.where(Category::class.java).findAll()
+        val categoryList = ArrayList<String>()
+        for (i in 1 .. categoryRealmResults.size) {
+            categoryList.add(categoryRealmResults[i -1]?.strCategory.toString())
+        }
+
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryList)
+        category_search_spinner.adapter = categoryAdapter
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -100,7 +134,7 @@ class MainActivity : AppCompatActivity(), TextWatcher {
 
     private fun reloadListView() {
         // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
-        val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+        val taskRealmResults = mRealm.where(Task::class.java).findAll()
 
         // 上記の結果を、TaskList としてセットする
         mTaskAdapter.taskList = mRealm.copyFromRealm(taskRealmResults)
@@ -112,28 +146,34 @@ class MainActivity : AppCompatActivity(), TextWatcher {
         mTaskAdapter.notifyDataSetChanged()
     }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-        val strCategory = category_search_edit_text.text.toString()
-
-        if (strCategory == "") {
-            reloadListView()
-        } else {
-            val categoryQuery =
-                mRealm.where(Task::class.java).beginsWith("category", strCategory).sort("title", Sort.DESCENDING)
-            val categoryRealmResults = categoryQuery.findAll()
-            mTaskAdapter.taskList = mRealm.copyFromRealm(categoryRealmResults)
-
-            // TaskのListView用のアダプタに渡す
-            listViewTasks.adapter = mTaskAdapter
-
-            // 表示を更新するために、アダプターにデータが変更されたことを知らせる
-            mTaskAdapter.notifyDataSetChanged()
-        }
-    }
+//    override fun onContextItemSelected(item: MenuItem?): Boolean {
+//
+//        val strCategory = category_search_spinner.selectedItem.toString()
+//
+//        if (category_search_spinner.selectedItem == null) {
+//            reloadListView()
+//        } else {
+//            val category = mRealm.where(Category::class.java).equalTo("strCategory", strCategory).findFirst().toString()
+//            val categoryRealmResults =
+//                mRealm.where(Task::class.java).equalTo("category", category).findAll()
+//            mTaskAdapter.taskList = mRealm.copyFromRealm(categoryRealmResults)
+//
+//            // TaskのListView用のアダプタに渡す
+//            listViewTasks.adapter = mTaskAdapter
+//
+//            // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+//            mTaskAdapter.notifyDataSetChanged()
+//        }
+//        return true
+//    }
+//
+//    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//    }
+//
+//    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//    }
+//
+//    override fun afterTextChanged(s: Editable?) {
+//
+//    }
 }

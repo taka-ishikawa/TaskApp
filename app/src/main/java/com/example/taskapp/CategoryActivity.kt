@@ -20,8 +20,6 @@ class CategoryActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar2)
 
-        title = "カテゴリの追加"
-
         add_category_button.setOnClickListener {
             val realm = Realm.getDefaultInstance()
             realm.beginTransaction()
@@ -30,8 +28,8 @@ class CategoryActivity : AppCompatActivity() {
 
             val categoryRealmResults = realm.where(Category::class.java).findAll()
             val identifier: Int =
-                if (categoryRealmResults.max("id") != null) { //there are some results
-                    categoryRealmResults.max("id")!!.toInt() + 1
+                if (categoryRealmResults.max("categoryId") != null) { //there are some results
+                    categoryRealmResults.max("categoryId")!!.toInt() + 1
                 } else { //there is no result
                     0
                 }

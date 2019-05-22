@@ -13,7 +13,8 @@
             app:layout_constraintStart_toStartOf="parent"
             android:textAlignment="center" android:hint="新しいカテゴリ"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/add_category_button"/>
+            app:layout_constraintBottom_toTopOf="@+id/add_category_button" android:singleLine="true"
+            android:selectAllOnFocus="true"/>
     <Button
             android:text="登録"
             android:layout_width="0dp"

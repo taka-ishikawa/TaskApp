@@ -9,8 +9,10 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_edit.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_edit.*
 import java.util.*
 
@@ -22,6 +24,8 @@ class EditActivity : AppCompatActivity() {
     private var mHour = 0
     private var mMinute = 0
     private var mTask: Task? = null
+
+    private val realm = Realm.getDefaultInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +45,7 @@ class EditActivity : AppCompatActivity() {
 
         // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
         val taskId = intent.getIntExtra(EXTRA_TASK, -1)
-        val realm = Realm.getDefaultInstance()
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
-        realm.close()
 
         val calendar = Calendar.getInstance()
         mYear = calendar.get(Calendar.YEAR)
@@ -56,7 +58,7 @@ class EditActivity : AppCompatActivity() {
             // 更新の場合
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
-            category_edit_text.setText(mTask!!.category)
+//            category_edit_text.setText(mTask!!.category)
 
             calendar.time = mTask!!.date
 
@@ -67,6 +69,26 @@ class EditActivity : AppCompatActivity() {
             date_button.text = dateString
             times_button.text = timeString
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //search by category
+//        val categoryAdapter = CategoryAdapter(this)
+        val categoryRealmResults = realm.where(Category::class.java).findAll()
+        val categoryList = ArrayList<String>()
+        for (i in 1 .. categoryRealmResults.size) {
+            categoryList.add(categoryRealmResults[i -1]?.strCategory.toString())
+        }
+
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryList)
+        category_spinner.adapter = categoryAdapter
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        realm.close()
     }
 
     private val mOnDateClickListener = View.OnClickListener {
@@ -123,7 +145,8 @@ class EditActivity : AppCompatActivity() {
 
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
-        val category = category_edit_text.text.toString()
+        val strCategory = category_spinner.selectedItem.toString()
+        val category = realm.where(Category::class.java).equalTo("strCategory", strCategory).findFirst()
 
         mTask!!.title = title
         mTask!!.contents = content
