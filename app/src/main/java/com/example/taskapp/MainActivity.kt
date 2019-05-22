@@ -77,10 +77,6 @@ class MainActivity : AppCompatActivity() {
 
                     val results = mRealm.where(Task::class.java).equalTo("id", task.id).findAll()
 
-                    mRealm.beginTransaction()
-                    results.deleteAllFromRealm()
-                    mRealm.commitTransaction()
-
                     val resultIntent = Intent(applicationContext, TaskAlarmReceiver::class.java)
                     val resultPendingIntent = PendingIntent.getBroadcast(
                         this@MainActivity,
@@ -91,6 +87,10 @@ class MainActivity : AppCompatActivity() {
 
                     val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
                     alarmManager.cancel(resultPendingIntent)
+
+                    mRealm.beginTransaction()
+                    results.deleteAllFromRealm()
+                    mRealm.commitTransaction()
 
                     reloadListView()
                 }
