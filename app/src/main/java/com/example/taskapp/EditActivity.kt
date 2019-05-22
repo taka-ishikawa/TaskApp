@@ -8,8 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -115,8 +117,13 @@ class EditActivity : AppCompatActivity() {
     }
 
     private val mOnDoneClickListener = View.OnClickListener {
-        addTask()
-        finish()
+        if (category_spinner.selectedItem == null) {
+            Snackbar.make(it, "カテゴリを追加してください", Snackbar.LENGTH_LONG).show()
+            return@OnClickListener
+        } else {
+            addTask()
+            finish()
+        }
     }
 
     private val mOnAddClickListener = View.OnClickListener {
@@ -135,18 +142,18 @@ class EditActivity : AppCompatActivity() {
             val taskRealmResults = realm.where(Task::class.java).findAll()
 
             val identifier: Int =
-                    if (taskRealmResults.max("id") != null) { //there are some results
-                        taskRealmResults.max("id")!!.toInt() + 1
-                    } else { //there is no result
-                        0
-                    }
+                if (taskRealmResults.max("id") != null) { //there are some results
+                    taskRealmResults.max("id")!!.toInt() + 1
+                } else { //there is no result
+                    0
+                }
             mTask!!.id = identifier
         }
 
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
         val strCategory = category_spinner.selectedItem.toString()
-        val category = realm.where(Category::class.java).equalTo("strCategory", strCategory).findFirst()
+        val category = realm.where(Category::class.java).equalTo("strCategory", strCategory)?.findFirst()
 
         mTask!!.title = title
         mTask!!.contents = content
@@ -168,7 +175,8 @@ class EditActivity : AppCompatActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val alarmManager= getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.set(AlarmManager.RTC_WAKEUP, calender.timeInMillis, resultPendingIntent)
+
     }
 }

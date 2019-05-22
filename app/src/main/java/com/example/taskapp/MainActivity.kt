@@ -112,16 +112,19 @@ class MainActivity : AppCompatActivity() {
         //　category spinner
 //        val categoryAdapter = CategoryAdapter(this)
         val categoryRealmResults = mRealm.where(Category::class.java).findAll()
-        val categoryArrayList = ArrayList<String>()
-        for (i in 1 .. categoryRealmResults.size) {
-            categoryArrayList.add(categoryRealmResults[i -1]?.strCategory.toString())
+        if (categoryRealmResults.size > 0) {
+            val categoryArrayList = ArrayList<String>()
+            for (i in 1..categoryRealmResults.size) {
+                categoryArrayList.add(categoryRealmResults[i - 1]?.strCategory.toString())
+            }
+
+            val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryArrayList)
+            category_search_spinner.adapter = categoryAdapter
+
+            categorySelected = mRealm.where(Category::class.java)
+                .equalTo("strCategory", category_search_spinner.selectedItem.toString()).findFirst()
+            reloadListView()
         }
-
-        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryArrayList)
-        category_search_spinner.adapter = categoryAdapter
-
-        categorySelected = mRealm.where(Category::class.java).equalTo("strCategory",category_search_spinner.selectedItem.toString()).findFirst()
-        reloadListView()
     }
 
     override fun onDestroy() {
